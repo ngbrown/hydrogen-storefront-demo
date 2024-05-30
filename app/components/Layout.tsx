@@ -34,6 +34,7 @@ export function Layout({
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside menu={header?.menu} shop={header?.shop} />
+      <MakeOfferAside />
       {header && <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />}
       <main>{children}</main>
       <Suspense>
@@ -112,5 +113,19 @@ function MobileMenuAside({
         />
       </Aside>
     )
+  );
+}
+
+function MakeOfferAside() {
+  const state = typeof window === 'object' ? window.history.state : null;
+  return (
+    <Aside id="make-offer-aside" heading="MAKE-OFFER">
+      <div className="make-offer">
+        <form className="make-offer-form">
+          <div>TODO: Make offer</div>
+          <div>{JSON.stringify(state)}</div>
+        </form>
+      </div>
+    </Aside>
   );
 }

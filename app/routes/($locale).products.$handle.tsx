@@ -243,6 +243,35 @@ function ProductForm({
       >
         {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
       </AddToCartButton>
+      <br />
+      <MakeOfferButton
+        disabled={!selectedVariant || !selectedVariant.availableForSale}
+        onClick={() => {
+          window.history.pushState(
+            {
+              productId: product.id,
+              productHandle: product.handle,
+              productTitle: product.title,
+              productVariantId: selectedVariant.id,
+              priceAtBidTime: selectedVariant.price,
+            },
+            '',
+            '#make-offer-aside',
+          );
+          // Work around for :target and pushState not interacting
+          // https://github.com/whatwg/html/issues/639#issuecomment-1053586536
+          window.addEventListener(
+            'popstate',
+            () => {
+              window.history.forward();
+            },
+            {once: true},
+          );
+          window.history.back();
+        }}
+      >
+        {selectedVariant?.availableForSale ? 'Make an offer' : 'Sold out'}
+      </MakeOfferButton>
     </div>
   );
 }
@@ -308,6 +337,24 @@ function AddToCartButton({
         </>
       )}
     </CartForm>
+  );
+}
+
+function MakeOfferButton({
+  children,
+  disabled,
+  onClick,
+}: {
+  children: React.ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <>
+      <button type="button" onClick={onClick} disabled={disabled}>
+        {children}
+      </button>
+    </>
   );
 }
 

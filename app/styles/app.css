@@ -247,6 +247,20 @@ aside li {
   display: flex;
 }
 /*
+*
+*/
+.make-offer {
+  height: calc(100vh - var(--header-height) - 40px);
+  overflow-y: auto;
+}
+
+.make-offer-form {
+  background: var(--color-light);
+  position: sticky;
+  top: 0;
+}
+
+/*
 * --------------------------------------------------
 * components/Search
 * --------------------------------------------------
@@ -298,8 +312,6 @@ aside li {
   align-items: center;
   gap: 1rem;
 }
-
-
 
 /*
 * --------------------------------------------------
