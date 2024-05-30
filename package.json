@@ -10,7 +10,8 @@
     "preview": "npm run build && shopify hydrogen preview",
     "lint": "eslint --no-error-on-unmatched-pattern --ext .js,.ts,.jsx,.tsx .",
     "typecheck": "tsc --noEmit",
-    "codegen": "shopify hydrogen codegen"
+    "codegen": "shopify hydrogen codegen",
+    "tunnel": "cloudflared tunnel run 1c7e9a65-f935-478a-8334-935431908b18"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {
