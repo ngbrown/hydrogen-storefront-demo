@@ -253,6 +253,7 @@ function ProductForm({
               productHandle: product.handle,
               productTitle: product.title,
               productVariantId: selectedVariant.id,
+              selectedOptions: selectedVariant.selectedOptions,
               priceAtBidTime: selectedVariant.price,
             },
             '',

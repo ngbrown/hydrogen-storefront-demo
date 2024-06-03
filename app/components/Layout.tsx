@@ -1,5 +1,5 @@
 import {Await} from '@remix-run/react';
-import {Suspense} from 'react';
+import {Suspense, useState} from 'react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -13,6 +13,7 @@ import {
   PredictiveSearchForm,
   PredictiveSearchResults,
 } from '~/components/Search';
+import {MakeOfferForm} from './MakeOfferForm';
 
 export type LayoutProps = {
   cart: Promise<CartApiQueryFragment | null>;
@@ -118,14 +119,110 @@ function MobileMenuAside({
 
 function MakeOfferAside() {
   const state = typeof window === 'object' ? window.history.state : null;
+  const priceAtBidTimeAmount =
+    state?.priceAtBidTime != null ? Number(state.priceAtBidTime.amount) : 0.0;
+  const isValidState =
+    state != null &&
+    priceAtBidTimeAmount > 0 &&
+    state.productId != null &&
+    state.productVariantId != null &&
+    state.productTitle != null &&
+    state.selectedOptions != null;
+  const key = isValidState
+    ? `${state.productId}:${state.productVariantId}`
+    : undefined;
   return (
     <Aside id="make-offer-aside" heading="MAKE-OFFER">
       <div className="make-offer">
-        <form className="make-offer-form">
-          <div>TODO: Make offer</div>
-          <div>{JSON.stringify(state)}</div>
-        </form>
+        {isValidState ? (
+          <MakeOfferForm
+            route="/make-offer"
+            action="SubmitOffer"
+            inputs={{
+              productId: state.productId,
+              productVariantId: state.productVariantId,
+              selectedOptions: state.selectedOptions,
+            }}
+            fetcherKey={key}
+          >
+            {(fetcher) =>
+              fetcher.data ? (
+                <>
+                  <h1>Congrats!</h1>
+                  <p>Your offer has been submitted successfully!</p>
+                </>
+              ) : (
+                <>
+                  <MakeOfferDisplay
+                    key={key}
+                    fetcherState={fetcher.state}
+                    priceAtBidTimeAmount={priceAtBidTimeAmount}
+                    productTitle={state.productTitle}
+                  />
+                  <div style={{display: 'none'}}>{JSON.stringify(state)}</div>
+                </>
+              )
+            }
+          </MakeOfferForm>
+        ) : null}
       </div>
     </Aside>
+  );
+}
+
+function MakeOfferDisplay({
+  fetcherState,
+  priceAtBidTimeAmount,
+  productTitle,
+}: {
+  fetcherState: 'idle' | 'loading' | 'submitting';
+  priceAtBidTimeAmount: number;
+  productTitle: string;
+}) {
+  const [offerPrice, setOfferPrice] = useState(
+    Math.round(priceAtBidTimeAmount * 0.75),
+  );
+
+  return (
+    <>
+      <div>
+        ${offerPrice}{' '}
+        <span style={{textDecoration: 'line-through', color: 'red'}}>
+          ${priceAtBidTimeAmount}
+        </span>
+      </div>
+      <fieldset style={{borderWidth: 0}}>
+        <label htmlFor="offerPrice">Offer Price</label>
+        <input
+          aria-label="Offer Price"
+          value={offerPrice}
+          max={priceAtBidTimeAmount}
+          min={Math.round(priceAtBidTimeAmount * 0.5)}
+          step={1.0}
+          id="offerPrice"
+          name="offerPrice"
+          required
+          type="range"
+          onChange={(e) => setOfferPrice(Number(e.target.value))}
+        ></input>
+        <label htmlFor="email">Email*</label>
+        <input
+          aria-label="Email"
+          autoComplete="email"
+          id="email"
+          name="email"
+          placeholder="Enter email to be notified if accepted"
+          required
+          type="email"
+        ></input>
+      </fieldset>
+      <button type="submit" disabled={fetcherState !== 'idle'}>
+        Submit your offer
+      </button>
+      <p>
+        Make an offer for the <em>{productTitle}</em>. If we can offer this
+        discount, we will send you an email with a link to our checkout page.
+      </p>
+    </>
   );
 }

@@ -40,7 +40,14 @@ export function Aside({
 function CloseAside() {
   return (
     /* eslint-disable-next-line jsx-a11y/anchor-is-valid */
-    <a className="close" href="#" onChange={() => history.go(-1)}>
+    <a
+      className="close"
+      href="#"
+      onChange={() => {
+        history.go(-1);
+        window.location.hash = '';
+      }}
+    >
       &times;
     </a>
   );
